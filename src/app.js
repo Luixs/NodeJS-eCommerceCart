@@ -1,33 +1,53 @@
 /**************************************************************************************
 // @LuisStarlino |  03/05/2023  15"50
 /***************************************************************************************/
+import { createItem, getRandomItems } from "./services/item.js";
+import { getRandomEvents, getRandomValue } from './functions/utils.js';
 import * as cartService from './services/cart.js';
-import { createItem } from "./services/item.js";
 
-//  --- Main Engine 
-console.log(`--------- 💳 Welcome to you Shopee Cart ---------`);
-let myCart = [];
-let myWishlist = [];
 
-let item1 = await createItem("hotwells ferrari", 20, 5);
-let item2 = await createItem("hotwells buggati", 39.99, 1);
+//------------------------------------------------
+// --- Main Engine 
+//------------------------------------------------
+console.log(`\n--------------------------------------------`);
+console.log(` --- 💳 Welcome to you Shopee Cart 💳 ---`);
+console.log(`     🤖 Random Engine Selected!    🤖 `);
+console.log(`     ⚙️      Configuration          ⚙️`);
+console.log(`--------------------------------------------`);
 
-await cartService.handleCart(myCart, item1, "A");
-await cartService.handleCart(myCart, item2, "A");
+let myCart = []; // TODO: Add this later... | let myWishlist = []; |
+
+//------------------------------------------------
+// --- R1: Get random products
+//------------------------------------------------
+var itemsRandom = await getRandomItems();
+
+//------------------------------------------------
+// --- R2: Adding all products in the cart
+//------------------------------------------------
+itemsRandom.forEach(async (p) => {
+    await cartService.handleCart(myCart, p, "A");
+})
+
+//------------------------------------------------
+// --- R3: Random Events
+//------------------------------------------------
+await getRandomEvents().then(async (r) => {
+
+    r.forEach(async (e) => {
+
+        
+        // --- get item
+        let i = await getRandomValue(myCart.length) - 1;
+        let randomDelete = await getRandomValue(myCart[i].quantity);
+
+        // --- do random handle
+        await cartService.handleCart(myCart, myCart[i], e.id, e.id == "DQ" ? randomDelete : null);
+    })
+});
+
+//------------------------------------------------
+// --- R4: Display Cart and total
+//------------------------------------------------
 await cartService.displayCart(myCart);
-await cartService.handleCart(myCart, item1, "DQ", 3);
-await cartService.displayCart(myCart);
-// await cartService.calculateTotal(myCart)
-// await cartService.handleCart(myCart, item2, "D");
-
-await cartService.calculateTotal(myCart)
-
-
-
-// console.log(myCart);
-
-
-
-
-
-
+await cartService.calculateTotal(myCart);
